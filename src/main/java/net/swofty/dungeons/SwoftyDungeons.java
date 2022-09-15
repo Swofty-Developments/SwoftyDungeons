@@ -6,6 +6,7 @@ import net.swofty.dungeons.command.DungeonCommand;
 import net.swofty.dungeons.data.Config;
 import net.swofty.dungeons.listener.PListener;
 import net.swofty.dungeons.placeholders.PlaceHolderHook;
+import net.swofty.dungeons.sql.SQLDatabase;
 import net.swofty.dungeons.utilities.SUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
@@ -24,6 +25,8 @@ public final class SwoftyDungeons extends JavaPlugin {
     public Config config;
     @Getter
     public Config messages;
+    @Getter
+    public SQLDatabase sql;
 
     @Override
     public void onEnable() {
@@ -34,6 +37,7 @@ public final class SwoftyDungeons extends JavaPlugin {
          */
         config = new Config("config.yml");
         messages = new Config("messages.yml");
+        sql = new SQLDatabase();
         SUtil.setCachedHexColors();
 
         /**

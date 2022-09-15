@@ -1,5 +1,8 @@
 package net.swofty.dungeons.sql;
 
+import net.swofty.dungeons.SwoftyDungeons;
+import net.swofty.dungeons.dungeon.DungeonSession;
+
 import java.io.File;
 import java.io.IOException;
 import java.sql.*;
@@ -10,12 +13,12 @@ public class SQLDatabase {
     private File file;
 
     public SQLDatabase() {
-        File file = new File(SwoftyParkour.getPlugin().getDataFolder(), DATABASE_FILENAME);
+        File file = new File(SwoftyDungeons.getPlugin().getDataFolder(), DATABASE_FILENAME);
         if (!file.exists()) {
             try {
                 file.getParentFile().mkdirs();
                 file.createNewFile();
-                SwoftyParkour.getPlugin().saveResource(DATABASE_FILENAME, false);
+                SwoftyDungeons.getPlugin().saveResource(DATABASE_FILENAME, false);
             } catch (IOException ex) {
                 ex.printStackTrace();
             }
@@ -36,31 +39,17 @@ public class SQLDatabase {
         return null;
     }
 
-    public Long getParkourTime(Parkour parkour, UUID uuid) {
-        Long toReturn = null;
-        try (Connection connection = SwoftyParkour.getPlugin().sql.getConnection()) {
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `parkour_" + parkour.getName() + "` WHERE uuid=?");
+    public Map<DungeonSession, Long> getSessions(UUID uuid) {
+        try (Connection connection = SwoftyDungeons.getPlugin().sql.getConnection()) {
+            HashMap<DungeonSession, Long> map = new HashMap();
+
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `dungeon_sessions` WHERE uuid=?");
             statement.setString(1, uuid.toString());
             ResultSet set = statement.executeQuery();
 
-            toReturn = set.getLong("time");
-
-            return toReturn;
-        } catch (SQLException ex) {
-            toReturn = null;
-        }
-        return toReturn;
-    }
-
-    public Map<UUID, Long> getParkourTop(Parkour parkour) {
-        try (Connection connection = SwoftyParkour.getPlugin().sql.getConnection()) {
-            HashMap<UUID, Long> map = new HashMap();
-
-            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `parkour_" + parkour.getName() + "`");
-            ResultSet set = statement.executeQuery();
-
             while (set.next()) {
-                map.put(UUID.fromString(set.getString("uuid")), set.getLong("time"));
+                map.put(new DungeonSession(set.getLong("timeSpent"), set.getLong("entitiesKilled"), set.getLong("damageDealt"), set.getLong("damageRecieved"), set.getString("dungeon")),
+                        set.getLong("time"));
             }
 
             return sortByValue(map);
@@ -70,25 +59,24 @@ public class SQLDatabase {
         return null;
     }
 
-    public Map<Parkour, Long> getTimesForPlayer(UUID uuid) {
-        Map<Parkour, Long> toReturn = new HashMap<>();
-        ParkourRegistry.parkourRegistry.forEach(parkour2 -> {
-            toReturn.put(parkour2, getParkourTime(parkour2, uuid));
-        });
-        if (toReturn.values().stream().allMatch(Objects::isNull)) return null;
-        return toReturn;
-    }
+    public Map<UUID, Long> getDungeonTop(String dungeonId) {
+        try (Connection connection = SwoftyDungeons.getPlugin().sql.getConnection()) {
+            HashMap<UUID, Long> map = new HashMap();
 
-    public int getPosition(UUID uuid, Parkour parkour) {
-        Map<UUID, Long> map = getParkourTop(parkour);
+            PreparedStatement statement = connection.prepareStatement("SELECT * FROM `dungeon_sessions` WHERE dungeon=?");
+            statement.setString(1, dungeonId);
+            ResultSet set = statement.executeQuery();
 
-        for (int x = 0; x < map.size(); x++) {
-            if (new ArrayList<>(map.entrySet()).get(x).getKey().toString().equals(uuid.toString())) {
-                return x + 1;
+            while (set.next()) {
+                map.put(UUID.fromString(set.getString("uuid")),
+                        set.getLong("time"));
             }
-        }
 
-        return 0;
+            return sortByValue(map);
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+        return null;
     }
 
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
