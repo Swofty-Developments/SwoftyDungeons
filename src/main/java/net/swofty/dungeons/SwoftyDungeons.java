@@ -1,15 +1,21 @@
 package net.swofty.dungeons;
 
 import lombok.Getter;
+import lombok.NonNull;
 import net.swofty.dungeons.command.CommandLoader;
 import net.swofty.dungeons.command.DungeonCommand;
 import net.swofty.dungeons.data.Config;
+import net.swofty.dungeons.dungeon.DungeonRegistry;
+import net.swofty.dungeons.holograms.Hologram;
+import net.swofty.dungeons.holograms.HologramManager;
 import net.swofty.dungeons.listener.PListener;
+import net.swofty.dungeons.placeholders.PlaceHolderHook;
 import net.swofty.dungeons.sql.SQLDatabase;
 import net.swofty.dungeons.utilities.SUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
 import org.bukkit.plugin.java.JavaPlugin;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
 
 import java.lang.reflect.Field;
@@ -25,7 +31,11 @@ public final class SwoftyDungeons extends JavaPlugin {
     @Getter
     public Config messages;
     @Getter
+    public Config dungeons;
+    @Getter
     public SQLDatabase sql;
+    @Getter
+    public Repeater repeater;
 
     @Override
     public void onEnable() {
@@ -36,7 +46,9 @@ public final class SwoftyDungeons extends JavaPlugin {
          */
         config = new Config("config.yml");
         messages = new Config("messages.yml");
+        dungeons = new Config("dungeons.yml");
         sql = new SQLDatabase();
+        DungeonRegistry.loadFromConfig(dungeons);
         SUtil.setCachedHexColors();
 
         /**
@@ -56,6 +68,34 @@ public final class SwoftyDungeons extends JavaPlugin {
          * Initialize plugin listeners
          */
         loadListeners();
+
+        /**
+         * Handle holograms
+         */
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                Bukkit.getOnlinePlayers().forEach(Hologram::handleRefreshment);
+            }
+        }.runTaskTimer(this, 0, 20);
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                HologramManager.runHologramLoop();
+            }
+        }.runTaskTimer(this, 10, 10);
+
+        /**
+         * Handle PlaceHolderAPI
+         */
+        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
+            new PlaceHolderHook(this).register();
+        }
+
+        /**
+         * Handle startup
+         */
+        repeater = new Repeater();
     }
 
     @Override

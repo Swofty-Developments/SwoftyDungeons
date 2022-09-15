@@ -23,12 +23,18 @@ messages:
     usage-overall:
       - "&cSwoftyDungeons &7- &fMade by Swofty#0001"
       - "§8- §e/dungeon create <name>"
-      - "§8- §e/dungeon spawners <dungeon> [add|list|remove] [spawnertype]"
-      - "§8- §e/dungeon spawnlocation <dungeon>"
-      - "§8- §e/dungeon markfinished <dungeon>"
+      - "§8- §e/dungeon edit <dungeon>"
       - "§8- §e/dungeon start <dungeon>"
       - "§8- §e/dungeon leave <dungeon>"
       - "§8- §e/dungeon info <dungeon>"
-      - "§8- §e/dungeon stats [dungeon]"
-      - "§8- §e/dungeon setleaderboard <dungeon>"
-      - "§8- §e/dungeon delleaderboard <dungeon>"
+      - "§8- §e/dungeon stats [player]"
+    name-already-taken: "§cThere is already a dungeon with the name §e$NAME"
+    creation-message:
+    - "§aCreated a dungeon with the name §e$NAME"
+    dungeon-not-found: "§cCould not find a dungeon named §e$NAME"
+    player-not-found:  "§cCould not find a player named §e$NAME"
+    invalid-number-input: "§e$INPUT §cis not a valid number!"
+  dungeons:
+    holograms:
+      spawner:
+        - "§eSpawner §f#$SPAWNER"

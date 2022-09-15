@@ -7,7 +7,7 @@ public class CommandLoader {
     public static List<DungeonCommand> commands;
 
     public CommandLoader() {
-        this.commands = new ArrayList<>();
+        commands = new ArrayList<>();
     }
 
     public void register(DungeonCommand command) {

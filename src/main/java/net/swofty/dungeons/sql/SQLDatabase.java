@@ -59,6 +59,18 @@ public class SQLDatabase {
         return null;
     }
 
+    public void deleteDungeon(String dungeonId) {
+        try (Connection connection = SwoftyDungeons.getPlugin().sql.getConnection()) {
+            HashMap<UUID, Long> map = new HashMap();
+
+            PreparedStatement statement = connection.prepareStatement("DELETE FROM `dungeon_sessions` WHERE dungeon=?");
+            statement.setString(1, dungeonId);
+            ResultSet set = statement.executeQuery();
+        } catch (SQLException ex) {
+            ex.printStackTrace();
+        }
+    }
+
     public Map<UUID, Long> getDungeonTop(String dungeonId) {
         try (Connection connection = SwoftyDungeons.getPlugin().sql.getConnection()) {
             HashMap<UUID, Long> map = new HashMap();
