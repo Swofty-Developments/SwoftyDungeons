@@ -1,0 +1,6 @@
+name: SwoftyDungeons
+version: '${project.version}'
+main: net.swofty.dungeons.SwoftyDungeons
+api-version: 1.18
+softdepend: [PlaceholderAPI]
+author: Swofty

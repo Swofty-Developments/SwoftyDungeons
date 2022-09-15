@@ -1,0 +1,34 @@
+#
+#      Swofty Dungeons
+#       Swofty#0001
+#
+#     Messages Config
+#
+
+#
+#  To use hex colors inside of messages, merely add the variable name and its
+#  hex color value here. After you have done this you can use the variable
+#  inside any of the messages
+#
+#  So to use this example hex color, you should use the $HEXCOLOREXAMPLE variable
+#
+hex-colors:
+  HEXCOLOREXAMPLE: "#3CEC5D"
+
+messages:
+  command:
+    no-permission: "%%red%%You do not have permission for this command!"
+    usage-command: "%%red%%Usage: $USAGE"
+    cooldown: "%%red%%You are currently under cooldown for another $SECONDS seconds"
+    usage-overall:
+      - "&cSwoftyDungeons &7- &fMade by Swofty#0001"
+      - "§8- §e/dungeon create <name>"
+      - "§8- §e/dungeon spawners <dungeon> [add|list|remove] [spawnertype]"
+      - "§8- §e/dungeon spawnlocation <dungeon>"
+      - "§8- §e/dungeon markfinished <dungeon>"
+      - "§8- §e/dungeon start <dungeon>"
+      - "§8- §e/dungeon leave <dungeon>"
+      - "§8- §e/dungeon info <dungeon>"
+      - "§8- §e/dungeon stats [dungeon]"
+      - "§8- §e/dungeon setleaderboard <dungeon>"
+      - "§8- §e/dungeon delleaderboard <dungeon>"
