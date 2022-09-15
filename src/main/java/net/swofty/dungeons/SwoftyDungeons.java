@@ -5,7 +5,6 @@ import net.swofty.dungeons.command.CommandLoader;
 import net.swofty.dungeons.command.DungeonCommand;
 import net.swofty.dungeons.data.Config;
 import net.swofty.dungeons.listener.PListener;
-import net.swofty.dungeons.placeholders.PlaceHolderHook;
 import net.swofty.dungeons.sql.SQLDatabase;
 import net.swofty.dungeons.utilities.SUtil;
 import org.bukkit.Bukkit;
@@ -57,13 +56,6 @@ public final class SwoftyDungeons extends JavaPlugin {
          * Initialize plugin listeners
          */
         loadListeners();
-
-        /**
-         * Handle PlaceHolderAPI
-         */
-        if (Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
-            new PlaceHolderHook(this).register();
-        }
     }
 
     @Override
