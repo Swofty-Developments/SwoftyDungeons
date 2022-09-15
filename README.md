@@ -98,4 +98,3 @@ messages:
 
 ## License
 SwoftyDungeons is licensed under the permissive MIT license. Please see [`LICENSE.txt`](https://github.com/Swofty-Developments/SwoftyDungeons/blob/master/LICENSE.txt) for more information.
-
