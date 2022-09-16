@@ -5,6 +5,7 @@ import net.swofty.dungeons.SwoftyDungeons;
 import net.swofty.dungeons.data.Config;
 import org.bukkit.Location;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.inventory.ItemStack;
 
 import java.util.*;
 
@@ -23,11 +24,13 @@ public class DungeonRegistry {
             dungeon.setFinished(section.getBoolean("finished"));
             dungeon.setName(section.getString("name"));
             dungeon.setSpawnLocation((Location) section.get("spawnlocation"));
+            dungeon.setTop((Location) section.get("top"));
+            dungeon.setKit((ArrayList<ItemStack>) section.getList("kit"));
 
-            HashMap<String, Spawner> spawners = new HashMap<>();
+            HashMap<Integer, Spawner> spawners = new HashMap<>();
             if (section.getConfigurationSection("spawners") != null) {
                 section.getConfigurationSection("spawners").getKeys(true).stream().sorted().forEach(s -> {
-                    spawners.put(s, (Spawner) section.getConfigurationSection("spawners").get(s));
+                    spawners.put(Integer.valueOf(s), (Spawner) section.getConfigurationSection("spawners").get(s));
                 });
             }
             dungeon.setSpawners(spawners);
@@ -53,7 +56,8 @@ public class DungeonRegistry {
         saveDungeon(dungeon, SwoftyDungeons.getPlugin().getDungeons());
     }
 
-    public static void removeDungeon(String name, Config config) {
+    public static void removeDungeon(String name) {
+        Config config = SwoftyDungeons.getPlugin().getDungeons();
         dungeonRegistry.removeIf(dungeon2 -> dungeon2.getName().equalsIgnoreCase(name));
         config.getConfigurationSection("dungeons").set(name, null);
         config.save();
@@ -70,12 +74,16 @@ public class DungeonRegistry {
         section.set("finished", dungeon.getFinished());
         section.set("name", dungeon.getName());
         section.set("spawnlocation", dungeon.getSpawnLocation());
+        section.set("kit", dungeon.getKit());
+        section.set("top", dungeon.getTop());
 
         section.set("spawners", "");
         section.createSection("spawners");
         if (dungeon.spawners != null) {
-            for (Map.Entry<String, Spawner> spawner : dungeon.spawners.entrySet()) {
-                section.getConfigurationSection("checkpoints").set(spawner.getKey(), spawner.getValue());
+            for (Map.Entry<Integer, Spawner> spawner : dungeon.spawners.entrySet()) {
+                Spawner spawner2 = spawner.getValue();
+                spawner2.setSpawnConditionsProgrammable(new ArrayList<>());
+                section.getConfigurationSection("spawners").set(String.valueOf(spawner.getKey()), spawner2);
             }
         }
         config.save();

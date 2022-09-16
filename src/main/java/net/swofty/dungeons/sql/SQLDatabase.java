@@ -1,6 +1,8 @@
 package net.swofty.dungeons.sql;
 
 import net.swofty.dungeons.SwoftyDungeons;
+import net.swofty.dungeons.dungeon.Dungeon;
+import net.swofty.dungeons.dungeon.DungeonRegistry;
 import net.swofty.dungeons.dungeon.DungeonSession;
 
 import java.io.File;
@@ -65,10 +67,19 @@ public class SQLDatabase {
 
             PreparedStatement statement = connection.prepareStatement("DELETE FROM `dungeon_sessions` WHERE dungeon=?");
             statement.setString(1, dungeonId);
-            ResultSet set = statement.executeQuery();
+            statement.execute();
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
+    }
+
+    public Map<Dungeon, Long> getTimesForPlayer(UUID uuid) {
+        Map<Dungeon, Long> toReturn = new HashMap<>();
+        DungeonRegistry.dungeonRegistry.forEach(dungeon2 -> {
+            toReturn.put(dungeon2, getDungeonTop(dungeon2.getName()).get(uuid));
+        });
+        if (toReturn.values().stream().allMatch(Objects::isNull)) return null;
+        return toReturn;
     }
 
     public Map<UUID, Long> getDungeonTop(String dungeonId) {
@@ -80,6 +91,12 @@ public class SQLDatabase {
             ResultSet set = statement.executeQuery();
 
             while (set.next()) {
+                if (map.containsKey(UUID.fromString(set.getString("uuid")))) {
+                    if (map.get(UUID.fromString(set.getString("uuid"))) < set.getLong("time")) {
+                        continue;
+                    }
+                }
+
                 map.put(UUID.fromString(set.getString("uuid")),
                         set.getLong("time"));
             }
@@ -89,6 +106,18 @@ public class SQLDatabase {
             ex.printStackTrace();
         }
         return null;
+    }
+
+    public int getPosition(UUID uuid, Dungeon dungeon) {
+        Map<UUID, Long> map = getDungeonTop(dungeon.getName());
+
+        for (int x = 0; x < map.size(); x++) {
+            if (new ArrayList<>(map.entrySet()).get(x).getKey().toString().equals(uuid.toString())) {
+                return x + 1;
+            }
+        }
+
+        return 0;
     }
 
     public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {

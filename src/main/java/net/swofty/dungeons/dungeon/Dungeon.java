@@ -3,7 +3,9 @@ package net.swofty.dungeons.dungeon;
 import lombok.Getter;
 import lombok.Setter;
 import org.bukkit.Location;
+import org.bukkit.inventory.ItemStack;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 
 public class Dungeon {
@@ -19,7 +21,13 @@ public class Dungeon {
     public Boolean finished;
     @Getter
     @Setter
-    public HashMap<String, Spawner> spawners;
+    public Location top;
+    @Getter
+    @Setter
+    public ArrayList<ItemStack> kit = new ArrayList<>();
+    @Getter
+    @Setter
+    public HashMap<Integer, Spawner> spawners = new HashMap<>();
 
     public Dungeon() {
         this.finished = false;

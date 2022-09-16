@@ -23,7 +23,7 @@ public class subCommand_edit extends DungeonCommand implements CommandCooldown {
     @Override
     public void run(CommandSource sender, String[] args) {
         if (args.length < 2) {
-            send(SUtil.variableize(SUtil.translateColorWords(SwoftyDungeons.getPlugin().messages.getString("messages.command.usage-command")), Arrays.asList(Map.entry("$USAGE", "/parkour info <parkour>"))));
+            send(SUtil.variableize(SUtil.translateColorWords(SwoftyDungeons.getPlugin().messages.getString("messages.command.usage-command")), Arrays.asList(Map.entry("$USAGE", "/dungeon edit <dungeon>"))));
             return;
         }
 

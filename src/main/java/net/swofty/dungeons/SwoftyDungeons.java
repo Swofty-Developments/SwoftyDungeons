@@ -2,10 +2,12 @@ package net.swofty.dungeons;
 
 import lombok.Getter;
 import lombok.NonNull;
+import lombok.SneakyThrows;
 import net.swofty.dungeons.command.CommandLoader;
 import net.swofty.dungeons.command.DungeonCommand;
 import net.swofty.dungeons.data.Config;
 import net.swofty.dungeons.dungeon.DungeonRegistry;
+import net.swofty.dungeons.dungeon.Spawner;
 import net.swofty.dungeons.holograms.Hologram;
 import net.swofty.dungeons.holograms.HologramManager;
 import net.swofty.dungeons.listener.PListener;
@@ -14,6 +16,7 @@ import net.swofty.dungeons.sql.SQLDatabase;
 import net.swofty.dungeons.utilities.SUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.command.CommandMap;
+import org.bukkit.configuration.serialization.ConfigurationSerialization;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.reflections.Reflections;
@@ -37,6 +40,11 @@ public final class SwoftyDungeons extends JavaPlugin {
     @Getter
     public Repeater repeater;
 
+    static {
+        ConfigurationSerialization.registerClass(Spawner.class, "spawner");
+    }
+
+    @SneakyThrows
     @Override
     public void onEnable() {
         plugin = this;
@@ -50,6 +58,15 @@ public final class SwoftyDungeons extends JavaPlugin {
         sql = new SQLDatabase();
         DungeonRegistry.loadFromConfig(dungeons);
         SUtil.setCachedHexColors();
+        SwoftyDungeons.getPlugin().getSql().getConnection().prepareStatement("CREATE TABLE IF NOT EXISTS `dungeon_sessions` (\n" +
+                "\t`uuid` TEXT,\n" +
+                "\t`dungeon` TEXT,\n" +
+                "\t`timeSpent` INT(64),\n" +
+                "\t`time` INT(64),\n" +
+                "\t`entitiesKilled` INT(64),\n" +
+                "\t`damageDealt` INT(64),\n" +
+                "\t`damageRecieved` INT(64)\n" +
+                ");").execute();
 
         /**
          * Initialize commands and register them
@@ -102,7 +119,6 @@ public final class SwoftyDungeons extends JavaPlugin {
     public void onDisable() {
         plugin = null;
     }
-
     private void loadCommands() {
         DungeonCommand.register();
 

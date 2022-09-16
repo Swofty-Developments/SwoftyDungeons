@@ -37,4 +37,11 @@ messages:
   dungeons:
     holograms:
       spawner:
+        - "§f$NAME"
         - "§eSpawner §f#$SPAWNER"
+      leaderboard-top:
+        - "§b$NAME§a's Leaderboard"
+        - "§7Dungeons"
+      leaderboard-entry: "§7$NUMBER. §e$USERNAME §8- §e$TIME"
+      leaderboard-bottom:
+        - "§bYour Longest Time: §e$PLAYERTIME"
