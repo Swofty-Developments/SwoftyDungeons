@@ -46,10 +46,17 @@ A custom dungeon creator for 1.18.x! Supports custom entity spawning and advance
 
 ## Table of contents
 
+* [Images](#images)
 * [Getting started](#getting-started)
 * [Setting up the configuration files](#setting-up-the-configuration-file)
 * [Listening to plugin events](#listening-to-plugin-events)
 * [License](#license)
+
+## Images
+
+![Image 1](https://cdn.discordapp.com/attachments/923387135111872552/1020654212880810025/unknown.png)
+![Image 2](https://cdn.discordapp.com/attachments/923387135111872552/1020654274268647466/unknown.png)
+![Image 3](https://cdn.discordapp.com/attachments/923387135111872552/1020654348549759066/unknown.png)
 
 ## Getting started
 
