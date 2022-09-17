@@ -5,9 +5,12 @@ import net.swofty.dungeons.SwoftyDungeons;
 import net.swofty.dungeons.utilities.SUtil;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
+import org.bukkit.NamespacedKey;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.PlayerInventory;
+import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 
@@ -76,8 +79,9 @@ public class DungeonHandler {
                         }
                     }
 
-                    for (int x = 1; x < spawner.getSpawnAmountProgrammable().getValue().getKey(); x++) {
-                        spawner.getLocation().getWorld().spawnEntity(spawner.getLocation(), spawner.getSpawnAmountProgrammable().getKey());
+                    for (int x = 0; x < spawner.getSpawnAmountProgrammable().getValue().getKey(); x++) {
+                        Entity entity = spawner.getLocation().getWorld().spawnEntity(spawner.getLocation(), spawner.getSpawnAmountProgrammable().getKey());
+                        entity.getPersistentDataContainer().set(new NamespacedKey(SwoftyDungeons.getPlugin(), "dungeonMob"), PersistentDataType.STRING, player.getUniqueId().toString());
                     }
                 }
             }.runTaskTimer(SwoftyDungeons.getPlugin(), (spawner.getSpawnAmountProgrammable().getValue().getValue() * 20), (spawner.getSpawnAmountProgrammable().getValue().getValue() * 20)));
@@ -107,6 +111,15 @@ public class DungeonHandler {
 
         bukkitTaskList.remove(player.getUniqueId()).forEach(BukkitTask::cancel);
 
+        player.getWorld().getEntities().forEach(entity -> {
+            if (!entity.getPersistentDataContainer().has(new NamespacedKey(SwoftyDungeons.getPlugin(), "dungeonMob"), PersistentDataType.STRING)) return;
+
+            String owner = entity.getPersistentDataContainer().get(new NamespacedKey(SwoftyDungeons.getPlugin(), "dungeonMob"), PersistentDataType.STRING);
+            if (player.getUniqueId().toString().equals(owner)) {
+                entity.remove();
+            }
+        });
+
         switch (reason) {
             case DUNGEON_DELETE -> {
                 player.sendMessage("§aYou have been exited from your dungeon as it has been deleted by an administrator");
@@ -123,8 +136,8 @@ public class DungeonHandler {
         player.sendMessage("§8- §eDungeon Name§7: §f" + session.getDungeon());
         player.sendMessage("§8- §eTime Spent§7: §f" + new SimpleDateFormat("mm:ss.SSS").format(session.getTimeSpent()));
         player.sendMessage("§8- §eEntities Killed§7: §f" + session.getEntitiesKilled());
-        player.sendMessage("§8- §eDamage Dealt§7: §f" + session.getDamageDealt());
-        player.sendMessage("§8- §eDamage Recieved§7: §f" + session.getDamageRecieved());
+        player.sendMessage("§8- §eDamage Dealt§7: §f" + session.getDamageDealt() + " hearts");
+        player.sendMessage("§8- §eDamage Recieved§7: §f" + session.getDamageRecieved() + " hearts");
 
         try {
             PreparedStatement statement = SwoftyDungeons.getPlugin().getSql().getConnection().prepareStatement("INSERT INTO `dungeon_sessions` " +

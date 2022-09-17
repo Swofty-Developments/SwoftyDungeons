@@ -25,12 +25,12 @@ public class DungeonSession {
         this.timeStarted = System.currentTimeMillis();
     }
 
-    public DungeonSession(Long timeSpent, Long entitiesKilled, Long damageDealt, Long damageRecieved, String dungeon) {
+    public DungeonSession(Long timeSpent, Long entitiesKilled, Long damageDealt, Long damageRecieved, String dungeon, Long timeStarted) {
         this.timeSpent = timeSpent;
         this.entitiesKilled = entitiesKilled;
         this.damageDealt = damageDealt;
         this.damageRecieved = damageRecieved;
         this.dungeon = dungeon;
-        this.timeStarted = System.currentTimeMillis();
+        this.timeStarted = timeStarted;
     }
 }

@@ -9,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
+import java.util.stream.Collectors;
 
 public class SQLDatabase {
     private static final String DATABASE_FILENAME = "database.db";
@@ -50,7 +51,7 @@ public class SQLDatabase {
             ResultSet set = statement.executeQuery();
 
             while (set.next()) {
-                map.put(new DungeonSession(set.getLong("timeSpent"), set.getLong("entitiesKilled"), set.getLong("damageDealt"), set.getLong("damageRecieved"), set.getString("dungeon")),
+                map.put(new DungeonSession(set.getLong("timeSpent"), set.getLong("entitiesKilled"), set.getLong("damageDealt"), set.getLong("damageRecieved"), set.getString("dungeon"), set.getLong("time")),
                         set.getLong("time"));
             }
 
@@ -139,6 +140,11 @@ public class SQLDatabase {
             toReturn.put(strKey, result.get(strKey));
         }
 
-        return toReturn;
+        final Map<V, K> reversed = new HashMap<V, K>(map.size());
+        for (final Map.Entry<K, V> e : map.entrySet()) {
+            reversed.put(e.getValue(), e.getKey());
+        }
+
+        return result;
     }
 }
