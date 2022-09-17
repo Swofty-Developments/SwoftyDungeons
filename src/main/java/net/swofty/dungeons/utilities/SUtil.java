@@ -4,6 +4,7 @@ import net.md_5.bungee.api.ChatColor;
 import net.md_5.bungee.api.chat.BaseComponent;
 import net.swofty.dungeons.SwoftyDungeons;
 import net.swofty.dungeons.data.Config;
+import net.swofty.dungeons.dungeon.DungeonSession;
 import org.bukkit.Bukkit;
 import org.bukkit.Location;
 import org.bukkit.Material;
@@ -154,29 +155,15 @@ public class SUtil {
         SUtil.translateColorWords(list).forEach(player::sendMessage);
     }
 
-    /**
-     * Taken from https://www.geeksforgeeks.org/sorting-a-hashmap-according-to-values/
-     */
     public static HashMap<UUID, Long> sortByValue(HashMap<UUID, Long> hm) {
-        // Create a list from elements of HashMap
-        List<Map.Entry<UUID, Long> > list =
-                new LinkedList<Map.Entry<UUID, Long> >(hm.entrySet());
+        LinkedHashMap<UUID, Long> reverseSortedMap = new LinkedHashMap<>();
 
-        // Sort the list
-        Collections.sort(list, new Comparator<Map.Entry<UUID, Long> >() {
-            public int compare(Map.Entry<UUID, Long> o1,
-                               Map.Entry<UUID, Long> o2)
-            {
-                return (o1.getValue()).compareTo(o2.getValue());
-            }
-        });
+        hm.entrySet()
+                .stream()
+                .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                .forEachOrdered(x -> reverseSortedMap.put(x.getKey(), x.getValue()));
 
-        // put data from sorted list to hashmap
-        HashMap<UUID, Long> temp = new LinkedHashMap<UUID, Long>();
-        for (Map.Entry<UUID, Long> aa : list) {
-            temp.put(aa.getKey(), aa.getValue());
-        }
-        return temp;
+        return reverseSortedMap;
     }
 
     public static List<String> translateColorWords(List<String> s) {

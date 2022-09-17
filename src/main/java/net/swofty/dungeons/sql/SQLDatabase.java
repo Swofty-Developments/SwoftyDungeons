@@ -9,7 +9,6 @@ import java.io.File;
 import java.io.IOException;
 import java.sql.*;
 import java.util.*;
-import java.util.stream.Collectors;
 
 public class SQLDatabase {
     private static final String DATABASE_FILENAME = "database.db";
@@ -55,7 +54,14 @@ public class SQLDatabase {
                         set.getLong("time"));
             }
 
-            return sortByValue(map);
+            LinkedHashMap<DungeonSession, Long> reverseSortedMap = new LinkedHashMap<>();
+
+            map.entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .forEachOrdered(x -> reverseSortedMap.put(x.getKey(), x.getValue()));
+
+            return reverseSortedMap;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -102,7 +108,14 @@ public class SQLDatabase {
                         set.getLong("timeSpent"));
             }
 
-            return sortByValue(map);
+            LinkedHashMap<UUID, Long> reverseSortedMap = new LinkedHashMap<>();
+
+            map.entrySet()
+                    .stream()
+                    .sorted(Map.Entry.comparingByValue(Comparator.reverseOrder()))
+                    .forEachOrdered(x -> reverseSortedMap.put(x.getKey(), x.getValue()));
+
+            return reverseSortedMap;
         } catch (SQLException ex) {
             ex.printStackTrace();
         }
@@ -119,32 +132,5 @@ public class SQLDatabase {
         }
 
         return 0;
-    }
-
-    public static <K, V extends Comparable<? super V>> Map<K, V> sortByValue(Map<K, V> map) {
-        List<Map.Entry<K, V>> list = new ArrayList<>(map.entrySet());
-        list.sort(Map.Entry.comparingByValue());
-        Collections.reverse(list);
-
-        Map<K, V> result = new LinkedHashMap<>();
-        for (Map.Entry<K, V> entry : list) {
-            result.put(entry.getKey(), entry.getValue());
-        }
-
-        List<K> alKeys = new ArrayList<>(result.keySet());
-        Collections.reverse(alKeys);
-
-        Map<K, V> toReturn = new LinkedHashMap<>();
-        // iterate LHM using reverse order of keys
-        for(K strKey : alKeys){
-            toReturn.put(strKey, result.get(strKey));
-        }
-
-        final Map<V, K> reversed = new HashMap<V, K>(map.size());
-        for (final Map.Entry<K, V> e : map.entrySet()) {
-            reversed.put(e.getValue(), e.getKey());
-        }
-
-        return result;
     }
 }
