@@ -1,6 +1,7 @@
 package net.swofty.dungeons.gui.guis;
 
 import net.swofty.dungeons.dungeon.Dungeon;
+import net.swofty.dungeons.dungeon.DungeonHandler;
 import net.swofty.dungeons.dungeon.DungeonRegistry;
 import net.swofty.dungeons.dungeon.Spawner;
 import net.swofty.dungeons.gui.GUI;
@@ -58,85 +59,66 @@ public class DungeonManagementGUI extends GUI {
         fill(SUtil.getStack("§e ", Material.GREEN_STAINED_GLASS_PANE, (short) 0, 1), 45, 53);
 
         if (dungeon.getFinished()) {
-            set(new GUIClickableItem() {
-                @Override
-                public void run(InventoryClickEvent e) {
-                    dungeon.setFinished(false);
-                    DungeonRegistry.updateDungeon(dungeon);
-
-                    e.getWhoClicked().closeInventory();
-                    new DungeonManagementGUI(dungeon).open(e.getWhoClicked());
-                }
-
-                @Override
-                public int getSlot() {
-                    return 53;
-                }
-
-                @Override
-                public ItemStack getItem() {
-                    return SUtil.getStack("§aPublish Dungeon", Material.LIME_STAINED_GLASS_PANE, (short) 0, 1, "§7Click this button to either publish or", "§7unpublish the dungeon for general players.", "§e", "§fRequirements for finalization",
-                            "§8- §7All spawners must contain valid spawn requirements  §a§lCOMPLETE",
-                            "§8- §7All spawners must contain valid spawn amount  §a§lCOMPLETE",
-                            "§8- §7There must be atleast one spawner  §a§lCOMPLETE",
-                            "§b",
-                            "§eClick to unfinalize");
-                }
-            });
-        } else {
-            boolean atleastOneParkour = dungeon.getSpawners() != null && !dungeon.getSpawners().isEmpty() && dungeon.getSpawners().size() > 0;
-            boolean validSpawnAmount = true;
-            for (Map.Entry<Integer, Spawner> entry : dungeon.getSpawners().entrySet()) {
-                try {
-                    entry.getValue().convertSpawnAmount();
-                } catch (Exception e) {
-                    validSpawnAmount = false;
-                    break;
-                }
-            }
-            boolean validSpawnRequirements = true;
-            for (Map.Entry<Integer, Spawner> entry : dungeon.getSpawners().entrySet()) {
-                try {
-                    entry.getValue().convertSpawnConditions();
-                } catch (Exception e) {
-                    validSpawnRequirements = false;
-                    break;
-                }
-            }
-
-            boolean finalValidSpawnRequirements = validSpawnRequirements;
-            boolean finalValidSpawnAmount = validSpawnAmount;
-            set(new GUIClickableItem() {
-                @Override
-                public void run(InventoryClickEvent e) {
-                    if (!finalValidSpawnRequirements || !finalValidSpawnAmount || !atleastOneParkour) {
-                        e.getWhoClicked().sendMessage("§cYou must meet all requirements before finalizing the dungeon");
-                        return;
-                    }
-
-                    dungeon.setFinished(false);
-                    DungeonRegistry.updateDungeon(dungeon);
-
-                    e.getWhoClicked().closeInventory();
-                    new DungeonManagementGUI(dungeon).open(e.getWhoClicked());
-                }
-
-                @Override
-                public int getSlot() {
-                    return 53;
-                }
-
-                @Override
-                public ItemStack getItem() {
-                    return SUtil.getStack("§aPublish Dungeon", Material.LIME_STAINED_GLASS_PANE, (short) 0, 1, "§7Click this button to either publish or", "§7unpublish the dungeon for general players.", "§e", "§fRequirements for finalization",
-                            "§8- §7All spawners must contain valid spawn requirements  " + (finalValidSpawnRequirements ? "§a§lCOMPLETE" : "§c§lINCOMPLETE"),
-                            "§8- §7All spawners must contain valid spawn amount  " + (finalValidSpawnAmount ? "§a§lCOMPLETE" : "§c§lINCOMPLETE"),
-                            "§8- §7There must be atleast one spawner  " + (atleastOneParkour ? "§a§lCOMPLETE" : "§c§lINCOMPLETE"),
-                            "§b",
-                            "§eClick to unfinalize");
-                }
-            });
+            dungeon.setFinished(false);
+            DungeonRegistry.updateDungeon(dungeon);
+            DungeonHandler.dungeonEdit(dungeon);
         }
+
+        boolean atleastOneParkour = dungeon.getSpawners() != null && !dungeon.getSpawners().isEmpty() && dungeon.getSpawners().size() > 0;
+        boolean validSpawnAmount = true;
+        for (Map.Entry<Integer, Spawner> entry : dungeon.getSpawners().entrySet()) {
+            try {
+                entry.getValue().convertSpawnAmount();
+            } catch (Exception e) {
+                validSpawnAmount = false;
+                break;
+            }
+        }
+        boolean validSpawnRequirements = true;
+        for (Map.Entry<Integer, Spawner> entry : dungeon.getSpawners().entrySet()) {
+            try {
+                entry.getValue().convertSpawnConditions();
+            } catch (Exception e) {
+                validSpawnRequirements = false;
+                break;
+            }
+        }
+
+        boolean finalValidSpawnRequirements = validSpawnRequirements;
+        boolean finalValidSpawnAmount = validSpawnAmount;
+        set(new GUIClickableItem() {
+            @Override
+            public void run(InventoryClickEvent e) {
+                if (!finalValidSpawnRequirements || !finalValidSpawnAmount || !atleastOneParkour) {
+                    e.getWhoClicked().sendMessage("§cYou must meet all requirements before finalizing the dungeon");
+                    return;
+                }
+
+                dungeon.setFinished(true);
+                DungeonRegistry.updateDungeon(dungeon);
+
+                e.getWhoClicked().closeInventory();
+
+                e.getWhoClicked().sendMessage("§aYou have successfully published the dungeon §e" + dungeon.getName());
+                e.getWhoClicked().sendMessage("§aNote that opening the edit menu again will unpublish the dungeon");
+                e.getWhoClicked().sendMessage("§bPlayers can now run §7/dungeon start " + dungeon.getName());
+            }
+
+            @Override
+            public int getSlot() {
+                    return 53;
+                }
+
+            @Override
+            public ItemStack getItem() {
+                return SUtil.getStack("§aPublish Dungeon", Material.LIME_STAINED_GLASS_PANE, (short) 0, 1, "§7Click this button to either publish or", "§7unpublish the dungeon for general players.", "§e", "§fRequirements for finalization",
+                        "§8- §7All spawners must contain valid spawn requirements  " + (finalValidSpawnRequirements ? "§a§lCOMPLETE" : "§c§lINCOMPLETE"),
+                        "§8- §7All spawners must contain valid spawn amount  " + (finalValidSpawnAmount ? "§a§lCOMPLETE" : "§c§lINCOMPLETE"),
+                        "§8- §7There must be atleast one spawner  " + (atleastOneParkour ? "§a§lCOMPLETE" : "§c§lINCOMPLETE"),
+                        "§b",
+                        "§eClick to publish");
+            }
+        });
 
         set(new GUIItem() {
             @Override
@@ -269,6 +251,7 @@ public class DungeonManagementGUI extends GUI {
         set(new GUIClickableItem() {
             @Override
             public void run(InventoryClickEvent e) {
+                DungeonHandler.dungeonDelete(dungeon);
                 DungeonRegistry.removeDungeon(dungeon.getName());
                 e.getWhoClicked().closeInventory();
                 e.getWhoClicked().sendMessage("§aSuccessfully deleted the dungeon §e" + dungeon.getName());
@@ -284,6 +267,30 @@ public class DungeonManagementGUI extends GUI {
                 return SUtil.getStack("§cDelete Dungeon", Material.RED_BANNER, (short) 0, 1, "§7Note this will clear all the dungeon", "§7sessions on this dungeon.",
                         "§b",
                         "§eClick to delete");
+            }
+        });
+        set(new GUIClickableItem() {
+            @Override
+            public void run(InventoryClickEvent e) {
+                e.getWhoClicked().closeInventory();
+
+                dungeon.setSpawnLocation(e.getWhoClicked().getLocation());
+                DungeonRegistry.updateDungeon(dungeon);
+
+                new DungeonManagementGUI(dungeon, page, guiType, spawnerNo);
+            }
+
+            @Override
+            public int getSlot() {
+                return 32;
+            }
+
+            @Override
+            public ItemStack getItem() {
+                return SUtil.getStack("§eUpdate Location", Material.AZALEA, (short) 0, 1,
+                        "§fX: " + dungeon.getSpawnLocation().getBlockX() + " Y: " + dungeon.getSpawnLocation().getBlockY() + " Z: " + dungeon.getSpawnLocation().getBlockZ(),
+                        "§b",
+                        "§eClick to update");
             }
         });
         set(GUIClickableItem.getCloseItem(49));
@@ -386,10 +393,10 @@ public class DungeonManagementGUI extends GUI {
                                                 fakeSpawner.convertSpawnAmount();
 
                                                 HashMap<Integer, Spawner> spawners = dungeon.getSpawners();
-                                                Spawner spawner = dungeon.getSpawners().get(spawnerNo);
+                                                Spawner spawner = dungeon.getSpawners().get(finalI);
                                                 spawner.setSpawnAmount(input);
 
-                                                spawners.put(spawnerNo, spawner);
+                                                spawners.put(finalI, spawner);
                                                 e.getWhoClicked().closeInventory();
                                                 new DungeonManagementGUI(dungeon, page, guiType).open(e.getWhoClicked());
                                                 dungeon.setSpawners(spawners);

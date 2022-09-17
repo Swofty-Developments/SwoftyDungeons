@@ -8,6 +8,7 @@ import org.bukkit.entity.EntityType;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -24,6 +25,9 @@ public class Spawner implements ConfigurationSerializable {
     public List<Map.Entry<Condition, Integer>> spawnConditionsProgrammable = new ArrayList<>();
     @Getter
     @Setter
+    public Map.Entry<EntityType, Map.Entry<Integer, Integer>> spawnAmountProgrammable = Map.entry(EntityType.ZOMBIE, Map.entry(1, 1));
+    @Getter
+    @Setter
     public String spawnAmount = "";
 
     public Spawner(Location location) {
@@ -37,6 +41,8 @@ public class Spawner implements ConfigurationSerializable {
         Integer one = Integer.parseInt(spawnAmount.split(";")[0]);
         Integer two = Integer.parseInt(spawnAmount.split(";")[1]);
         EntityType type = EntityType.valueOf(spawnAmount.split(";")[2]);
+
+        spawnAmountProgrammable = Map.entry(type, Map.entry(one, two));
     }
 
     public void convertSpawnConditions() {

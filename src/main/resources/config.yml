@@ -8,3 +8,4 @@
 hologram-split-size: 0.3
 # Must not be less than 1 and wouldn't recommend being over 10
 leaderboard-display-size: 10
+scoreboard-enabled: TRUE

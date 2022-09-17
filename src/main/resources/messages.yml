@@ -16,6 +16,23 @@ hex-colors:
   HEXCOLOREXAMPLE: "#3CEC5D"
 
 messages:
+  # Supports the variables;
+  # $NAME - Dungeon Name
+  # $TIME - Elapsed Time
+  # $DAMAGE_DEALT - Damage dealt
+  # $DAMAGE_RECIEVED - Damage recieved
+  # $ENTITIES_KILLED - The amount of mobs that have been killed
+  # $BEST_TIME - Players best time
+  scoreboard:
+    - "§e§l Dungeons"
+    - "§f "
+    - "§fDungeon: §a$NAME"
+    - "§fTime: §b$TIME"
+    - "§fDamage Dealt: §c$DAMAGE_DEALT"
+    - "§fEntities Killed: §e$ENTITIES_KILLED"
+    - "§fBest Time: §e$BEST_TIME"
+    - "§e "
+    - "§ewww.example.com"
   command:
     no-permission: "%%red%%You do not have permission for this command!"
     usage-command: "%%red%%Usage: $USAGE"
@@ -34,6 +51,12 @@ messages:
     dungeon-not-found: "§cCould not find a dungeon named §e$NAME"
     player-not-found:  "§cCould not find a player named §e$NAME"
     invalid-number-input: "§e$INPUT §cis not a valid number!"
+    not-in-a-dungeon: "§cYou are not currently in a dungeon"
+    started-dungeon-message:
+      - "§aWelcome to the §e$NAME §adungeon"
+    dungeon-not-finished: "§aThe §e$NAME §adungeon has not been finished"
+    started-dungeon-title: "§e$NAME"
+    started-dungeon-subtitle: "§adungeon"
   dungeons:
     holograms:
       spawner:

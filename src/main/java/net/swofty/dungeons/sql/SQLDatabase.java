@@ -78,7 +78,7 @@ public class SQLDatabase {
         DungeonRegistry.dungeonRegistry.forEach(dungeon2 -> {
             toReturn.put(dungeon2, getDungeonTop(dungeon2.getName()).get(uuid));
         });
-        if (toReturn.values().stream().allMatch(Objects::isNull)) return null;
+        //if (toReturn.values().stream().allMatch(Objects::isNull)) return null;
         return toReturn;
     }
 
@@ -92,13 +92,13 @@ public class SQLDatabase {
 
             while (set.next()) {
                 if (map.containsKey(UUID.fromString(set.getString("uuid")))) {
-                    if (map.get(UUID.fromString(set.getString("uuid"))) < set.getLong("time")) {
+                    if (map.get(UUID.fromString(set.getString("uuid"))) > set.getLong("timeSpent")) {
                         continue;
                     }
                 }
 
                 map.put(UUID.fromString(set.getString("uuid")),
-                        set.getLong("time"));
+                        set.getLong("timeSpent"));
             }
 
             return sortByValue(map);

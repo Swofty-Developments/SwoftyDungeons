@@ -117,8 +117,10 @@ public final class SwoftyDungeons extends JavaPlugin {
 
     @Override
     public void onDisable() {
+        repeater.stop();
         plugin = null;
     }
+
     private void loadCommands() {
         DungeonCommand.register();
 
